@@ -27,7 +27,7 @@ public class ChatRoomActivity extends AppCompatActivity implements View.OnClickL
     private static final int UPDATE = 1;
     private Socket socket = null;
     private EditText edit;
-    private Button send, disconnect;
+    private Button send;
     private RecyclerView msg_recyclerView;
     private MsgAdapter adapter;
     private List<Msg> msgs = new ArrayList<Msg>();//存储消息容器
@@ -56,8 +56,6 @@ public class ChatRoomActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
 
-//        Intent intent = getIntent();
-//        name = intent.getStringExtra("name");
         name=getInfo();
         Log.d("Luyucheng", name);
 
@@ -69,10 +67,10 @@ public class ChatRoomActivity extends AppCompatActivity implements View.OnClickL
             public void run() {
                 try {
                     socket = new Socket();
-                    socket.connect(new InetSocketAddress("118.24.85.15", 30001), 5000);
+                    socket.connect(new InetSocketAddress("118.24.85.15", 12345));
 
                     //input
-                    BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(),"UTF-8"));
+                    BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                     while ((msg_get = br.readLine()) != null) {
                         Message message = new Message();
@@ -93,8 +91,6 @@ public class ChatRoomActivity extends AppCompatActivity implements View.OnClickL
         edit = findViewById(R.id.input_text);
         send = findViewById(R.id.send);
         send.setOnClickListener(this);
-//        disconnect =  findViewById(R.id.disconnect);
-//        disconnect.setOnClickListener(this);
 
         msg_recyclerView = findViewById(R.id.msg_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -112,29 +108,6 @@ public class ChatRoomActivity extends AppCompatActivity implements View.OnClickL
                 new Thread(new SocketThread(s)).start();
             }
             break;
-//            case R.id.disconnect: {
-//                try {
-//                    //socket.shutdownOutput();
-//                    //socket.shutdownInput();
-//                    //socket.close();
-//                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF-8"));
-//                    bw.write("-用户退出-");
-//                    bw.newLine();
-//                    bw.flush();
-//                    //发送message,更新UI
-//                    Message message = new Message();
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString("msg", "你已经退出聊天！");
-//                    message.setData(bundle);
-//                    message.what = UPDATE;
-//                    handler.sendMessage(message);
-//
-//                } catch (IOException e) {
-//                    Log.d("Luyucheng","断开连接");
-//                    e.printStackTrace();
-//                }
-//            }
-//            break;
         }
     }
     private String getInfo()
@@ -145,19 +118,19 @@ public class ChatRoomActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-    @Override
-    public void onBackPressed() {
-        try {
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF-8"));
-            bw.write("-用户退出-");
-            bw.newLine();
-            bw.flush();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        super.onBackPressed();
-    }
+//    @Override
+//    public void onBackPressed() {
+//        try {
+//            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF-8"));
+//            bw.write("-用户退出-");
+//            bw.newLine();
+//            bw.flush();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        super.onBackPressed();
+//    }
 
     //back事件
 
@@ -173,7 +146,7 @@ public class ChatRoomActivity extends AppCompatActivity implements View.OnClickL
         @Override
         public void run() {
             try {
-                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF-8"));
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 bw.write(msg);
                 bw.newLine();
                 bw.flush();
